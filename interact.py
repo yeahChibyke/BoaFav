@@ -6,6 +6,8 @@ from eth_account import Account
 
 load_dotenv()
 
+GET_CONTRACT = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
+
 def main():
     rpc = os.getenv("RPC_URL")
     env = NetworkEnv(EthereumRPC(rpc))
@@ -15,10 +17,12 @@ def main():
     my_account = Account.from_key(key)
     boa.env.add_account(my_account, force_eoa=True)
 
-    fav_contract = boa.load("fav.vy")
+    fav_deployer = boa.load_partial("fav.vy")
+    fav_interact = fav_deployer.at(GET_CONTRACT)
 
-    fav_contract.add_person("Alice", 100)
-
+    fav_interact_alice_fav_num = fav_interact.get_fav_num("Alice")
+    print(f"Alice's favourite number for this particular interaction is: {fav_interact_alice_fav_num}")
 
 if __name__ == "__main__":
     main()
+
